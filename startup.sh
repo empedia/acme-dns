@@ -12,7 +12,7 @@ socat UDP-LISTEN:53,fork,bind=fly-global-services UDP:127.0.0.1:53 &
 
 # Start socat for TCP forwarding (IPv6 only via [::])
 # Listen on [::]:53 (TCP) and forward to 127.0.0.1:53 (TCP)
-socat TCP-LISTEN:53,fork,bind=[::] TCP:127.0.0.1:53 &
+socat TCP-LISTEN:53,fork,bind=0.0.0.0 TCP:127.0.0.1:53 &
 
 # Keep the script running in foreground so the container doesn't exit
 wait
