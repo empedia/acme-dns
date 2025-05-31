@@ -14,7 +14,7 @@ sleep 2
 
 # Start socat for TCP forwarding (IPv6 only via [::])
 # Listen on [::]:53 (TCP) and forward to 127.0.0.1:53 (TCP)
-socat -6 TCP-LISTEN:53,fork,bind=2001:19f0:7400:882f:0:cee6:f83c:1 TCP:127.0.0.1:53 &
+socat -6 -d -d TCP-LISTEN:53,fork,bind=[::] TCP:127.0.0.1:53 &
 
 # Keep the script running in foreground so the container doesn't exit
 wait
