@@ -19,6 +19,7 @@ RUN mkdir -p /usr/local/bin/acme-dns
 RUN apk --no-cache add ca-certificates && update-ca-certificates
 RUN apk add --no-cache socat
 RUN apk add --no-cache nano
+RUN apk add -- no-cache iproute2
 
 VOLUME ["/etc/acme-dns", "/var/lib/acme-dns"]
 
