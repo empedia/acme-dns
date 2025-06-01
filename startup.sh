@@ -1,6 +1,6 @@
 #!/bin/sh
-echo "--- Port 53 Listeners BEFORE ACME DNS ---"
-ss -tulnp | grep ':53'
+echo "--- Port 53/5300 Listeners BEFORE ACME DNS ---"
+ss -tulnp | grep ':53/|5300'
 echo "--------------------------------------------------"
 # Start acme-dns in the background
 /usr/local/bin/acme-dns/acme-dns &
@@ -8,27 +8,27 @@ echo "--------------------------------------------------"
 # Wait a moment for acme-dns to start listening on 127.0.0.1:53
 sleep 2
 
-echo "--- Port 53 Listeners BEFORE UDP SOCAT---"
-ss -tulnp | grep ':53'
+echo "--- Port 53/5300 Listeners BEFORE UDP SOCAT---"
+ss -tulnp | grep ':53/|5300'
 echo "--------------------------------------------------"
 
 # Start socat for UDP forwarding (IPv4 only via fly-global-services)
-# Listen on fly-global-services:53 (UDP) and forward to 127.0.0.1:53 (UDP)
-socat UDP-LISTEN:53,fork,bind=fly-global-services UDP:127.0.0.1:53 &
+# Listen on fly-global-services:53 (UDP) and forward to 127.0.0.1:5300 for redirected acme-dns (UDP)
+socat UDP-LISTEN:53,fork,bind=fly-global-services UDP:127.0.0.1:5300 &
 
 
-echo "--- Port 53 Listeners AFTER UDP SOCAT BEFORE SOCAT TCP---"
-ss -tulnp | grep ':53'
+echo "--- Port 53/5300 Listeners AFTER UDP SOCAT BEFORE SOCAT TCP---"
+ss -tulnp | grep ':53/|5300'
 echo "--------------------------------------------------"
 
 # Start socat for TCP forwarding (IPv6 only via [::])
-# Listen on [::]:53 (TCP) and forward to 127.0.0.1:53 (TCP)
-socat -6 -d -d TCP-LISTEN:53,fork,bind=[::],reuseaddr TCP:127.0.0.1:53 &
+# Listen on [::]:53 (TCP) and forward to 127.0.0.1:5300 (TCP)
+socat -6 -d -d TCP-LISTEN:53,fork,bind=[::],reuseaddr TCP:127.0.0.1:5300 &
 
 sleep 2
 
-echo "--- Port 53 Listeners AFTER TCP SOCAT ---"
-ss -tulnp | grep ':53'
+echo "--- Port 53/5300 Listeners AFTER TCP SOCAT ---"
+ss -tulnp | grep ':53/|5300'
 echo "--------------------------------------------------"
 
 # Keep the script running in foreground so the container doesn't exit
